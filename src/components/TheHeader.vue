@@ -27,7 +27,7 @@ export default {
 
 <template>
   <header
-    class="bg-light fixed top-0 left-0 z-[888] h-[60px] leading-[60px] md:h-20 md:leading-[80px] px-4 w-full"
+    class="bg-light fixed top-0 left-0 z-[888] h-[60px] leading-[60px] md:h-20 md:leading-[80px] px-8 w-full"
   >
     <div class="flex justify-between items-center w-full h-full">
       <RouterLink to="/">
@@ -43,7 +43,7 @@ export default {
         <font-awesome-icon :icon="['fas', 'xmark']" />
       </button>
       <div class="hidden md:flex md:items-center md:gap-8 md:font-medium">
-        <nav class="flex gap-2">
+        <nav class="flex gap-4">
           <RouterLink
             to="/"
             :class="currentPath === '/' && 'font-extrabold underline underline-offset-4'"

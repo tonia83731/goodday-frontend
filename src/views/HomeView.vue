@@ -4,6 +4,8 @@ import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import hero_1 from '../assets/images/home_hero/hero_1.jpg'
 import hero_2 from '../assets/images/home_hero/hero_2.jpg'
 import hero_3 from '../assets/images/home_hero/hero_3.jpg'
+import hero_4 from '../assets/images/home_hero/hero_4.jpg'
+import hero_5 from '../assets/images/home_hero/hero_5.jpg'
 import { taiwanCitiesZH } from '../data/twCity'
 import { getWeatherData } from '../data/weatherData'
 import dayjs from 'dayjs'
@@ -36,6 +38,14 @@ export default {
         {
           id: 'hero_3',
           img: hero_3
+        },
+        {
+          id: 'hero_4',
+          img: hero_4
+        },
+        {
+          id: 'hero_5',
+          img: hero_5
         }
       ]
     }
@@ -150,7 +160,7 @@ export default {
             <button
               class="w-9 h-9 flex justify-center items-center rounded-full"
               :class="currSlides === num - 1 ? 'bg-sky-2' : ''"
-              v-for="num in 3"
+              v-for="num in 5"
               :key="num"
               @click="slideTo(num)"
             >
