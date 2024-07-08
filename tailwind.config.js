@@ -19,7 +19,9 @@ export default {
           4: '#70DAD3',
           '4-40': 'rgb(112, 218, 211, .4)'
         },
-        mustard: '#FFE979'
+        mustard: '#FFE979',
+        moon: '#F8DFBC',
+        'moon-20': 'rgb(248, 223, 188, .2)'
       }
     }
   },
