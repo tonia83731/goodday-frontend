@@ -43,7 +43,7 @@ export default {
 </script>
 
 <template>
-  <div class="container mx-auto flex flex-col gap-8">
+  <div class="container mx-auto px-2 xl:px-0 flex flex-col gap-8 max-w-[1280px]">
     <div class="w-full h-32 md:h-44 relative">
       <img
         src="../assets/images/travel_hero.png"
