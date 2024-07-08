@@ -5,7 +5,8 @@ export default {
     extend: {
       fontFamily: {
         'titan-one': ['Titan One', 'sans-serif'],
-        inter: ['Inter', 'sans-serif']
+        inter: ['Inter', 'sans-serif'],
+        'noto-san': ['Noto Sans TC', 'sans-serif']
       },
       colors: {
         light: '#FAFAFA',

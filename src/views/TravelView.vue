@@ -1,30 +1,34 @@
 import { taiwanCitiesEN } from '../data/twCity';
 <script lang="ts">
-import { taiwanCitiesEN } from '../data/twCity'
+import { taiwanCitiesZH } from '../data/twCity'
 export default {
   data() {
     return {
-      cityOptions: taiwanCitiesEN(),
-      citySelected: 'Taipei City',
+      cityOptions: taiwanCitiesZH(),
+      citySelected: '臺北市',
       routelinks: [
         {
           id: 'spots',
           title: 'SPOTS',
+          title_zh: '觀光景點',
           href: '/travel/spots'
         },
         {
           id: 'restaurants',
           title: 'RESTAURANTS',
+          title_zh: '觀光餐廳',
           href: '/travel/restaurants'
         },
         {
           id: 'hotels',
           title: 'HOTELS',
+          title_zh: '觀光旅館',
           href: '/travel/hotels'
         },
         {
           id: 'activities',
           title: 'ACTIVITIES',
+          title_zh: '觀光活動',
           href: '/travel/activities'
         }
       ]
@@ -63,15 +67,19 @@ export default {
       </v-multi-select>
     </div>
     <nav
-      class="font-titan-one text-xl grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-4 md:grid-rows-1 text-center"
+      class="font-noto-san text-xl grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-4 md:grid-rows-1 text-center"
     >
       <RouterLink
-        v-for="{ id, title, href } in routelinks"
+        v-for="{ id, title_zh, href } in routelinks"
         :key="id"
         :to="href"
-        class="rounded-md drop-shadow-md bg-white w-full h-12 leading-[3rem] md:h-16 md:leading-[4rem]"
-        :class="currentPath === href && 'border-2 border-sky-3 bg-sky-4-40'"
-        >{{ title }}</RouterLink
+        class="rounded-md drop-shadow-md w-full h-12 leading-[3rem] md:h-16 md:leading-[4rem]"
+        :class="
+          currentPath === href
+            ? 'border-2 border-sky-3 bg-sky-4-40 font-extrabold'
+            : 'bg-white font-semibold'
+        "
+        >{{ title_zh }}</RouterLink
       >
     </nav>
     <div class="">

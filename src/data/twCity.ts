@@ -23,8 +23,8 @@ export const taiwanCities: { zh: string; en: string }[] = [
   { zh: '連江縣', en: 'Lienchiang County' }
 ]
 
-export const taiwanCitiesEN = () => {
-  return taiwanCities.map(({ en }) => {
-    return en
+export const taiwanCitiesZH = () => {
+  return taiwanCities.map(({ zh }) => {
+    return zh
   })
 }

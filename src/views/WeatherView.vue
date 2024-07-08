@@ -1,13 +1,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { taiwanCitiesEN } from '../data/twCity'
+import { taiwanCitiesZH } from '../data/twCity'
 import { getWeatherData } from '../data/weatherData'
 
 export default defineComponent({
   data() {
     return {
-      cityOptions: taiwanCitiesEN(),
-      citySelected: 'Taipei City',
+      cityOptions: taiwanCitiesZH(),
+      citySelected: '臺北市',
       isNotiShowed: true,
       weatherData: getWeatherData()
     }
@@ -61,10 +61,10 @@ export default defineComponent({
         class="hidden col-span-2 text-dark bg-mustard rounded-md px-4 py-2 md:flex justify-between items-center"
       >
         <div class="flex flex-col gap-1.5">
-          <h5 class="font-bold text-lg">Current Weather</h5>
+          <h5 class="font-bold text-lg">目前天氣</h5>
           <div class="flex gap-1 items-center">
             <img src="../assets/icons/raining_icon.png" alt="raining" class="w-4 h-4" />
-            <p class="text-sm">Probability of Precipitation 30%</p>
+            <p class="text-sm">降雨機率 30%</p>
           </div>
         </div>
         <div class="font-bold text-2xl">30°C</div>
@@ -72,14 +72,14 @@ export default defineComponent({
       <div class="text-light bg-dark rounded-md px-4 py-2">
         <div class="flex gap-2 items-center">
           <img src="../assets//icons/sunrise_icon.png" alt="sunrise" class="w-7 h-7" />
-          <h5 class="font-bold text-lg">Sunrise</h5>
+          <h5 class="font-bold text-lg">日出時間</h5>
         </div>
         <div class="font-bold text-2xl text-center">06:00</div>
       </div>
       <div class="text-light bg-dark rounded-md px-4 py-2">
         <div class="flex gap-2 items-center">
           <img src="../assets//icons/sunset_icon.png" alt="sunset" class="w-7 h-7" />
-          <h5 class="font-bold text-lg">Sunset</h5>
+          <h5 class="font-bold text-lg">日落時間</h5>
         </div>
         <div class="font-bold text-2xl text-center">18:30</div>
       </div>
@@ -87,10 +87,10 @@ export default defineComponent({
         class="col-span-2 text-dark bg-mustard rounded-md px-2 py-1 flex justify-between items-center md:hidden"
       >
         <div class="flex flex-col gap-1.5">
-          <h5 class="font-bold text-lg">Current Weather</h5>
+          <h5 class="font-bold text-lg">目前天氣</h5>
           <div class="flex gap-1 items-center">
             <img src="../assets/icons/raining_icon.png" alt="raining percentage" class="w-3 h-3" />
-            <p class="text-sm">Probability of Precipitation 30%</p>
+            <p class="text-sm">降雨機率 30%</p>
           </div>
         </div>
         <div class="font-bold text-2xl">30°C</div>
@@ -110,7 +110,7 @@ export default defineComponent({
           >
             <img :src="props.img" :alt="props.description" class="w-14" />
             <div class="">
-              <h5 class="text-lg">{{ props.id }}</h5>
+              <h5 class="text-lg font-medium">{{ props.id_zh }}</h5>
               <div
                 class="font-bold text-2xl flex items-center gap-1 md:flex-col md:gap-2 md:text-3xl"
               >

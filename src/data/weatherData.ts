@@ -11,6 +11,7 @@ import windy from '../assets/weathers/windy.png'
 export const dummyWeatherData = [
   {
     id: 'SUNDAY',
+    id_zh: '星期日',
     mintemp: 23,
     maxtemp: 33,
     rainPercentage: 10,
@@ -18,6 +19,7 @@ export const dummyWeatherData = [
   },
   {
     id: 'MONDAY',
+    id_zh: '星期一',
     mintemp: 20,
     maxtemp: 30,
     rainPercentage: 30,
@@ -25,6 +27,7 @@ export const dummyWeatherData = [
   },
   {
     id: 'TUESDAY',
+    id_zh: '星期二',
     mintemp: 18,
     maxtemp: 28,
     rainPercentage: 10,
@@ -32,6 +35,7 @@ export const dummyWeatherData = [
   },
   {
     id: 'WEDNESDAY',
+    id_zh: '星期三',
     mintemp: 22,
     maxtemp: 32,
     rainPercentage: 20,
@@ -39,6 +43,7 @@ export const dummyWeatherData = [
   },
   {
     id: 'THURSDAY',
+    id_zh: '星期四',
     mintemp: 19,
     maxtemp: 29,
     rainPercentage: 15,
@@ -46,6 +51,7 @@ export const dummyWeatherData = [
   },
   {
     id: 'FRIDAY',
+    id_zh: '星期五',
     mintemp: 21,
     maxtemp: 31,
     rainPercentage: 25,
@@ -53,6 +59,7 @@ export const dummyWeatherData = [
   },
   {
     id: 'SATURDAY',
+    id_zh: '星期六',
     mintemp: 17,
     maxtemp: 27,
     rainPercentage: 5,
