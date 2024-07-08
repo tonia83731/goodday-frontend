@@ -17,7 +17,7 @@ export default {
 <template>
   <div class="flex flex-col gap-4">
     <div
-      class="font-bold text-center bg-sky-2 grid grid-cols-8 md:grid-cols-7 px-2 md:px-8 py-2 rounded-md"
+      class="font-bold text-center bg-sky-2 grid grid-cols-7 md:grid-cols-6 px-2 md:px-8 py-2 rounded-md"
     >
       <div class="col-span-2 md:col-span-1">Name</div>
       <div class="col-span-2 md:col-span-1">Date</div>

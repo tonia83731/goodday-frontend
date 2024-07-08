@@ -12,12 +12,24 @@ export default {
     Phone: String,
     OpenTime: String,
     Address: String
+  },
+  data() {
+    return {
+      isExpanded: false
+    }
+  },
+  methods: {
+    handleExpanded() {
+      this.isExpanded = !this.isExpanded
+    }
   }
 }
 </script>
 
 <template>
-  <div class="bg-moon-20 rounded-md px-8 py-2 flex gap-4">
+  <div
+    class="bg-moon-20 rounded-md px-8 py-2 flex gap-4 max-h-[480px] md:max-h-[600px] overflow-y-auto"
+  >
     <img
       :src="Picture.PictureUrl1"
       :alt="Picture.PictureDescription1"
@@ -33,13 +45,20 @@ export default {
           </a>
         </div>
       </div>
-      <div class="text-xs description-lime-clamp-2">
+      <div class="text-xs" :class="isExpanded ? '' : 'description-lime-clamp-2 overflow-ellipsis'">
         {{ Description }}
+      </div>
+      <div v-if="isExpanded" class="text-xs">營業時間: {{ OpenTime }}</div>
+      <div v-if="isExpanded" class="text-xs">餐廳地址: {{ Address }}</div>
+      <div v-if="isExpanded" class="text-xs flex flex-col gap-2 mt-2">
+        <h5 class="font-bold text-lg">評論區</h5>
+        <div class="text-slate-400 text-center">No Comment!</div>
       </div>
       <button
         class="text-xs text-sky-4 underline underline-offset-2 hover:font-bold w-full text-end"
+        @click="handleExpanded"
       >
-        more
+        {{ isExpanded ? 'less' : 'more' }}
       </button>
     </div>
   </div>

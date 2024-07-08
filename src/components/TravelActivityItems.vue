@@ -36,7 +36,7 @@ export default {
 <!-- name & class * 1, time * 1, description * 2, organizer * 1, more  -->
 <template>
   <div
-    class="bg-moon-20 rounded-md px-2 md:px-8 py-1 grid grid-cols-8 md:grid-cols-7 text-xs items-center gap-0.5 md:gap-2"
+    class="bg-moon-20 rounded-md px-2 md:px-8 py-1 grid grid-cols-7 md:grid-cols-6 text-xs items-center gap-0.5 md:gap-2"
   >
     <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
       <div>{{ ActivityName }}</div>
@@ -61,8 +61,5 @@ export default {
       </button>
     </div>
     <div class="text-center hidden md:block">{{ Organizer }}</div>
-    <button class="text-xs text-sky-4 underline underline-offset-2 hover:font-bold w-full">
-      more
-    </button>
   </div>
 </template>

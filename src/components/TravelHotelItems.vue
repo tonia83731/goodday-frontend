@@ -54,15 +54,14 @@ export default {
           </a>
         </div>
       </div>
+      <div class="flex gap-1 items-center text-xs">
+        <font-awesome-icon :icon="['fas', 'location-dot']" />
+        <div>{{ Address }}</div>
+      </div>
       <ul class="text-xs [&>li]:before:mr-1 [&>li]:before:content-['・']">
         <li v-if="ServiceInfo" className="flex">{{ ServiceInfo }}</li>
         <li v-if="ParkingInfo" className="flex">{{ ParkingInfo }}</li>
       </ul>
-      <button
-        class="text-xs text-sky-4 underline underline-offset-2 hover:font-bold w-full text-end"
-      >
-        more
-      </button>
     </div>
   </div>
 </template>

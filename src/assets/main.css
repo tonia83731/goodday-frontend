@@ -28,3 +28,14 @@ footer {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #70dad3;
+  border-radius: 3px;
+}
