@@ -2,8 +2,11 @@
 import { defineComponent } from 'vue'
 import { taiwanCitiesZH } from '../data/twCity'
 import { getWeatherData } from '../data/weatherData'
-
+import TheNotification from '../components/TheNotification.vue'
 export default defineComponent({
+  components: {
+    TheNotification
+  },
   data() {
     return {
       cityOptions: taiwanCitiesZH(),
@@ -45,16 +48,7 @@ export default defineComponent({
       </v-multi-select>
     </div>
     <!-- notification -->
-    <div
-      class="bg-brick text-light text-base px-4 py-0.5 rounded-sm flex justify-between items-center"
-      :class="!isNotiShowed && 'hidden'"
-    >
-      <div class="flex gap-2 items-center">
-        <div><font-awesome-icon :icon="['fas', 'triangle-exclamation']" /></div>
-        <div>Earthquake alert: There was an earthquake at 13:00</div>
-      </div>
-      <button @click="handleIsNotiClose"><font-awesome-icon :icon="['fas', 'xmark']" /></button>
-    </div>
+    <TheNotification />
     <!-- sunrise & sunset & current weather -->
     <div class="grid grid-cols-2 grid-rows-2 gap-2 md:grid-cols-4 md:grid-rows-1 md:gap-4">
       <div
