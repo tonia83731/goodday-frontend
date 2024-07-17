@@ -6,10 +6,12 @@ import hero_2 from '../assets/images/home_hero/hero_2.jpg'
 import hero_3 from '../assets/images/home_hero/hero_3.jpg'
 import hero_4 from '../assets/images/home_hero/hero_4.jpg'
 import hero_5 from '../assets/images/home_hero/hero_5.jpg'
-import { taiwanCitiesZH } from '../data/twCity'
 import { getWeatherData } from '../data/weatherData'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
+import { useCityStore } from '../stores/useCityStore'
+import { mapState, mapActions } from 'pinia'
+import { getWeather36hr } from '../api/getWeatherData'
 
 export default {
   name: 'HomeView',
@@ -20,9 +22,15 @@ export default {
   },
   data() {
     return {
-      cityOptions: taiwanCitiesZH(),
-      citySelected: '臺北市',
+      // cityOptions: taiwanCitiesZH(),
+      // citySelected: '臺北市',
       currWeatherData: getWeatherData()[1],
+      weatherElement: {
+        wx: null,
+        pop: null,
+        minT: null,
+        maxT: null
+      },
       currTime: new Date(),
       timer: null as number | null,
       currSlides: 0,
@@ -51,6 +59,11 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useCityStore, ['updateCitySelected']),
+    handleCitySelect(selectedOption: any) {
+      // this.citySelected = selectedOption
+      this.updateCitySelected(selectedOption)
+    },
     startTimer() {
       this.timer = setInterval(() => {
         this.currTime = new Date()
@@ -72,20 +85,47 @@ export default {
     },
     slideTo(num: number) {
       ;(this.$refs as any).carousel.slideTo(num - 1)
+    },
+    handleWeatherData(weatherElement: any, elName: string) {
+      const { parameterName } = weatherElement.filter((data: any) => data.elementName === elName)[0]
+        .time[0].parameter
+      return parameterName
+    },
+    // ---------- data fetch ----------
+    async fetchWeather36hr() {
+      const data = await getWeather36hr(this.citySelected)
+      // console.log(data)
+      const weatherElement = data[0].weatherElement
+      // console.log(weatherElement)
+      const wx = this.handleWeatherData(weatherElement, 'Wx')
+      const pop = this.handleWeatherData(weatherElement, 'PoP')
+      const minT = this.handleWeatherData(weatherElement, 'MinT')
+      const maxT = this.handleWeatherData(weatherElement, 'MaxT')
+      this.weatherElement = { wx, pop, minT, maxT }
+      // console.log(this.weatherElement)
     }
   },
   mounted() {
     this.startTimer()
+    this.fetchWeather36hr()
   },
   beforeUnmount() {
     this.stopTimer()
   },
   computed: {
+    ...mapState(useCityStore, ['citySelected', 'cityOptions']),
     currDateFormat() {
       return dayjs(this.currTime).format('YYYY-MM-DD')
     },
     currTimeFormat() {
       return dayjs(this.currTime).format('HH:mm:ss')
+    }
+  },
+  watch: {
+    citySelected(newCity, oldCity) {
+      if (newCity !== oldCity) {
+        this.fetchWeather36hr()
+      }
     }
   }
 }
@@ -97,7 +137,7 @@ export default {
     <div class="flex flex-col gap-4">
       <carousel :items-to-show="1">
         <slide v-for="slide in travelData" :key="slide.id">
-          <img :src="slide.img" :alt="slide.id" class="w-full h-60 object-cover object-center" />
+          <img :src="slide.img" :alt="slide.id" class="w-full h-80 object-cover object-center" />
         </slide>
 
         <template #addons>
@@ -111,13 +151,13 @@ export default {
     </div>
     <div class="px-4">
       <v-multi-select
-        v-model="citySelected"
         :options="cityOptions"
         :searchable="false"
         :close-on-select="true"
         :hide-selected="true"
         :multiple="false"
-        select-label=""
+        :modelValue="citySelected"
+        @select="handleCitySelect"
       >
       </v-multi-select>
     </div>
@@ -135,21 +175,28 @@ export default {
         class="w-20 h-20 mx-auto"
       />
       <div class="font-bold text-4xl flex items-center justify-center gap-1">
-        <div class="">{{ currWeatherData.mintemp }} <span class="text-base">°C</span></div>
+        <div class="">{{ weatherElement.minT }} <span class="text-base">°C</span></div>
         <div class="">-</div>
-        <div class="">{{ currWeatherData.maxtemp }} <span class="text-base">°C</span></div>
+        <div class="">{{ weatherElement.maxT }} <span class="text-base">°C</span></div>
       </div>
-      <h5 class="text-sky-4 text-lg">降雨機率: {{ currWeatherData.rainPercentage }} %</h5>
+      <h5 class="text-sky-4 text-lg">降雨機率: {{ weatherElement.pop }} %</h5>
     </div>
   </div>
   <!-- desktop -->
-  <div class="hidden md:flex md:flex-col md:gap-8">
-    <div class="grid grid-cols-2 gap-8 items-center">
-      <div class="flex flex-col gap-4 items-start w-4/5 mx-auto">
+  <div class="hidden md:flex md:flex-col md:gap-8 md:justify-center md:h-[calc(100vh-280px)]">
+    <div class="grid grid-cols-2 gap-8 items-center 2xl:grid-cols-3">
+      <div class="flex flex-col gap-4 items-start w-4/5 mx-auto 2xl:col-span-2">
         <h1 class="text-6xl font-titan-one">GOODDAY</h1>
-        <p class="text-lg font-medium w-4/5">
+        <p class="text-lg font-medium w-4/5 2xl:hidden">
           體驗台灣旅行的樂趣！從熱鬧的夜市和壯麗的景觀，到友善的當地人和豐富的文化，每一刻在台灣都保證帶來快樂和難忘的回憶。
         </p>
+        <div class="hidden 2xl:block text-lg font-medium w-4/5">
+          體驗台灣旅行的樂趣，絕對是一次難忘的冒險。台灣擁有多樣化的景觀和文化，不論是熱愛自然、喜歡美食，還是對歷史文化充滿興趣的旅客，都能在這裡找到心之所向。
+          <br />台灣的夜市是許多遊客的最愛，這裡不僅是品嚐各式各樣美食的天堂，更是了解台灣夜生活的絕佳去處。從士林夜市到饒河街觀光夜市，各種小吃讓人垂涎欲滴，如蚵仔煎、鹽酥雞、珍珠奶茶等，滿足你的味蕾。
+          <br />除了美食，台灣擁有壯麗的自然景觀。你可以登上台北的象山欣賞城市全景，或是前往阿里山看日出，甚至可以在花蓮的太魯閣國家公園感受大自然的鬼斧神工。無論你走到哪裡，台灣的山水都會讓你驚嘆不已。
+          <br />台灣人民的友善和熱情也讓人印象深刻。無論是在路邊攤位買東西，還是向當地人問路，你總能感受到他們的熱情和好客之心。此外，台灣豐富的文化和歷史遺產，如台南的古蹟和台北的故宮博物院，更讓人深刻體會到這塊土地的魅力。
+          <br />總之，台灣旅行的每一刻都充滿驚喜和快樂，這裡的每一處風景和每一個笑臉，都會成為你最珍貴的回憶。
+        </div>
       </div>
       <div class="flex flex-col gap-4">
         <div class="flex gap-6">
@@ -179,7 +226,7 @@ export default {
           :wrap-around="true"
         >
           <slide v-for="slide in travelData" :key="slide.id">
-            <div class="px-4 h-[450px]">
+            <div class="px-4 w-full h-[450px]">
               <img
                 :src="slide.img"
                 :alt="slide.id"

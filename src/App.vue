@@ -1,5 +1,5 @@
 <script lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 import { taiwanCitiesZH } from './data/twCity'
 import { socialLinks } from './data/socialLinks'
 import TheHeader from './components/TheHeader.vue'
@@ -43,7 +43,7 @@ export default {
 <template>
   <TheHeader />
   <!-- mt-[90px] mb-[120px] md:mt-[120px] md:mb-[150px] flex flex-col gap-8 w-full -->
-  <main class="mt-[75px] mb-8 md:mt-[105px]">
+  <main class="mt-[75px] mb-8 md:mt-[105px] w-full h-full">
     <RouterView />
   </main>
   <TheFooter />

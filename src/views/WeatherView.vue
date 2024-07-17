@@ -1,23 +1,101 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { taiwanCitiesZH } from '../data/twCity'
+// import { taiwanCitiesZH } from '../data/twCity'
 import { getWeatherData } from '../data/weatherData'
 import TheNotification from '../components/TheNotification.vue'
+import { mapState, mapActions } from 'pinia'
+import { useCityStore } from '../stores/useCityStore'
+import { getSunRiseAndSet } from '../api/getSunData'
+// import dayjs from 'dayjs'
+import { getWeather36hr } from '../api/getWeatherData'
+import { getEarthquake, getTyphoon } from '../api/getNotificationData'
+
 export default defineComponent({
   components: {
     TheNotification
   },
   data() {
     return {
-      cityOptions: taiwanCitiesZH(),
-      citySelected: '臺北市',
+      suntime_data: {
+        sunrise: null,
+        sunset: null
+      },
+      weatherElement: {
+        wx: null,
+        pop: null,
+        minT: null,
+        maxT: null
+      },
+      earthquakeNoti: [],
       isNotiShowed: true,
       weatherData: getWeatherData()
     }
   },
+  computed: { ...mapState(useCityStore, ['citySelected', 'cityOptions']) },
   methods: {
+    ...mapActions(useCityStore, ['updateCitySelected']),
+    handleCitySelect(selectedOption: any) {
+      // this.citySelected = selectedOption
+      this.updateCitySelected(selectedOption)
+    },
     handleIsNotiClose() {
       this.isNotiShowed = !this.isNotiShowed
+    },
+    handleWeatherData(weatherElement: any, elName: string) {
+      const { parameterName } = weatherElement.filter((data: any) => data.elementName === elName)[0]
+        .time[0].parameter
+      return parameterName
+    },
+    // ---------- data fetch ----------
+    async fetchSunRiseAndSet() {
+      const data = await getSunRiseAndSet(this.citySelected)
+      const { time } = data[0]
+      const { SunRiseTime, SunSetTime } = time[0]
+      this.suntime_data = {
+        sunrise: SunRiseTime,
+        sunset: SunSetTime
+      }
+      // console.log('fetch')
+    },
+    async fetchWeather36hr() {
+      const data = await getWeather36hr(this.citySelected)
+      console.log(data)
+      const weatherElement = data[0].weatherElement
+      // console.log(weatherElement)
+      const wx = this.handleWeatherData(weatherElement, 'Wx')
+      const pop = this.handleWeatherData(weatherElement, 'PoP')
+      const minT = this.handleWeatherData(weatherElement, 'MinT')
+      const maxT = this.handleWeatherData(weatherElement, 'MaxT')
+      this.weatherElement = { wx, pop, minT, maxT }
+      // console.log(this.weatherElement)
+    },
+    async fetchEarthquake() {
+      const datas = await getEarthquake()
+      // console.log(datas)
+      this.earthquakeNoti = datas.map((item: any) => {
+        return {
+          reportcontent: item.ReportContent
+        }
+      })
+      // console.log(this.earthquakeNoti)
+    }
+    // async fetchTyphoon() {
+    //   const datas = await getTyphoon()
+    //   const { fix } = datas[0].forecastData
+    // }
+  },
+  mounted() {
+    this.fetchSunRiseAndSet()
+    this.fetchWeather36hr()
+    this.fetchEarthquake()
+    // this.fetchTyphoon()
+  },
+  watch: {
+    citySelected(newCity, oldCity) {
+      if (newCity !== oldCity) {
+        this.fetchSunRiseAndSet()
+        this.fetchWeather36hr()
+      }
     }
   }
 })
@@ -36,58 +114,61 @@ export default defineComponent({
       </h2>
     </div>
     <div class="md:grid md:grid-cols-3">
+      <!-- v-model="citySelected" -->
       <v-multi-select
-        v-model="citySelected"
         :options="cityOptions"
         :searchable="false"
         :close-on-select="true"
         :hide-selected="true"
         :multiple="false"
-        select-label=""
+        :modelValue="citySelected"
+        @select="handleCitySelect"
       >
       </v-multi-select>
     </div>
     <!-- notification -->
-    <TheNotification />
+    <div v-for="({ reportcontent }, index) in earthquakeNoti" :key="'earthquake-' + index">
+      <TheNotification :notification="reportcontent" />
+    </div>
     <!-- sunrise & sunset & current weather -->
     <div class="grid grid-cols-2 grid-rows-2 gap-2 md:grid-cols-4 md:grid-rows-1 md:gap-4">
       <div
         class="hidden col-span-2 text-dark bg-mustard rounded-md px-4 py-2 md:flex justify-between items-center"
       >
         <div class="flex flex-col gap-1.5">
-          <h5 class="font-bold text-lg">目前天氣</h5>
+          <h5 class="font-bold text-lg">目前天氣: {{ weatherElement.wx }}</h5>
           <div class="flex gap-1 items-center">
             <img src="../assets/icons/raining_icon.png" alt="raining" class="w-4 h-4" />
-            <p class="text-sm">降雨機率 30%</p>
+            <p class="text-sm">降雨機率 {{ weatherElement.pop }}%</p>
           </div>
         </div>
-        <div class="font-bold text-2xl">30°C</div>
+        <div class="font-bold text-2xl">{{ weatherElement.minT }}-{{ weatherElement.maxT }}°C</div>
       </div>
       <div class="text-light bg-dark rounded-md px-4 py-2">
         <div class="flex gap-2 items-center">
           <img src="../assets//icons/sunrise_icon.png" alt="sunrise" class="w-7 h-7" />
           <h5 class="font-bold text-lg">日出時間</h5>
         </div>
-        <div class="font-bold text-2xl text-center">06:00</div>
+        <div class="font-bold text-2xl text-center">{{ suntime_data.sunrise }}</div>
       </div>
       <div class="text-light bg-dark rounded-md px-4 py-2">
         <div class="flex gap-2 items-center">
           <img src="../assets//icons/sunset_icon.png" alt="sunset" class="w-7 h-7" />
           <h5 class="font-bold text-lg">日落時間</h5>
         </div>
-        <div class="font-bold text-2xl text-center">18:30</div>
+        <div class="font-bold text-2xl text-center">{{ suntime_data.sunset }}</div>
       </div>
       <div
         class="col-span-2 text-dark bg-mustard rounded-md px-2 py-1 flex justify-between items-center md:hidden"
       >
         <div class="flex flex-col gap-1.5">
-          <h5 class="font-bold text-lg">目前天氣</h5>
+          <h5 class="font-bold text-lg">目前天氣: {{ weatherElement.wx }}</h5>
           <div class="flex gap-1 items-center">
             <img src="../assets/icons/raining_icon.png" alt="raining percentage" class="w-3 h-3" />
-            <p class="text-sm">降雨機率 30%</p>
+            <p class="text-sm">降雨機率 {{ weatherElement.pop }}%</p>
           </div>
         </div>
-        <div class="font-bold text-2xl">30°C</div>
+        <div class="font-bold text-2xl">{{ weatherElement.minT }}-{{ weatherElement.maxT }}°C</div>
       </div>
     </div>
     <!-- weekly weather -->

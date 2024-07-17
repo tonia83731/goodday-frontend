@@ -1,11 +1,12 @@
-import { taiwanCitiesEN } from '../data/twCity';
 <script lang="ts">
-import { taiwanCitiesZH } from '../data/twCity'
+// import { taiwanCitiesZH } from '../data/twCity'
+import { useCityStore } from '../stores/useCityStore'
+import { mapState, mapActions } from 'pinia'
 export default {
   data() {
     return {
-      cityOptions: taiwanCitiesZH(),
-      citySelected: '臺北市',
+      // cityOptions: taiwanCitiesZH(),
+      // citySelected: '臺北市',
       routelinks: [
         {
           id: 'spots',
@@ -35,8 +36,16 @@ export default {
     }
   },
   computed: {
+    ...mapState(useCityStore, ['citySelected', 'cityOptions']),
     currentPath() {
       return this.$route.path
+    }
+  },
+  methods: {
+    ...mapActions(useCityStore, ['updateCitySelected']),
+    handleCitySelect(selectedOption: any) {
+      // this.citySelected = selectedOption
+      this.updateCitySelected(selectedOption)
     }
   }
 }
@@ -55,14 +64,15 @@ export default {
       </h2>
     </div>
     <div class="md:grid md:grid-cols-3">
+      <!-- v-model="citySelected" -->
       <v-multi-select
-        v-model="citySelected"
         :options="cityOptions"
         :searchable="false"
         :close-on-select="true"
         :hide-selected="true"
         :multiple="false"
-        select-label=""
+        :modelValue="citySelected"
+        @select="handleCitySelect"
       >
       </v-multi-select>
     </div>

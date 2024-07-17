@@ -1,22 +1,29 @@
 <script lang="ts">
-import { taiwanCitiesZH } from '../data/twCity'
+// import { taiwanCitiesZH } from '../data/twCity'
+import { mapActions, mapState } from 'pinia'
+import { useCityStore } from '../stores/useCityStore'
 
 export default {
   data() {
     return {
-      cityOptions: taiwanCitiesZH(),
-      citySelected: '臺北市',
+      // cityOptions: taiwanCitiesZH(),
+      // citySelected: '臺北市',
       hamburgarToggle: false
     }
   },
   computed: {
+    ...mapState(useCityStore, ['citySelected', 'cityOptions']),
     currentPath() {
       return this.$route.path
     }
   },
   methods: {
+    ...mapActions(useCityStore, ['updateCitySelected']),
     handleHamburgerToggle() {
       this.hamburgarToggle = !this.hamburgarToggle
+    },
+    handleSelected(selectOptions: any) {
+      this.updateCitySelected(selectOptions)
     }
     // updateDimensions() {
     //   this.screenWidth = window.innerWidth
@@ -110,7 +117,7 @@ export default {
           :close-on-select="true"
           :hide-selected="true"
           :multiple="false"
-          select-label=""
+          @select="handleSelected"
         >
         </v-multi-select>
       </div>

@@ -1,7 +1,10 @@
 <script lang="ts">
 export default {
   props: {
-    notification: String
+    notification: {
+      type: String,
+      required: true
+    }
   },
   data() {
     return {
@@ -23,7 +26,7 @@ export default {
   >
     <div class="flex gap-2 items-center">
       <div><font-awesome-icon :icon="['fas', 'triangle-exclamation']" /></div>
-      <div>Earthquake alert: There was an earthquake at 13:00</div>
+      <div>地震警告: {{ notification }}</div>
     </div>
     <button @click="handleIsNotiClose"><font-awesome-icon :icon="['fas', 'xmark']" /></button>
   </div>
