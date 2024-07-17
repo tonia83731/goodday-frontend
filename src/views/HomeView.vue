@@ -6,7 +6,8 @@ import hero_2 from '../assets/images/home_hero/hero_2.jpg'
 import hero_3 from '../assets/images/home_hero/hero_3.jpg'
 import hero_4 from '../assets/images/home_hero/hero_4.jpg'
 import hero_5 from '../assets/images/home_hero/hero_5.jpg'
-import { getWeatherData } from '../data/weatherData'
+import { getWeatherImageData } from '../data/weatherData'
+
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
 import { useCityStore } from '../stores/useCityStore'
@@ -24,9 +25,10 @@ export default {
     return {
       // cityOptions: taiwanCitiesZH(),
       // citySelected: '臺北市',
-      currWeatherData: getWeatherData()[1],
+      // currWeatherData: getWeatherData()[1],
       weatherElement: {
-        wx: null,
+        wx: '',
+        wxImg: '',
         pop: null,
         minT: null,
         maxT: null
@@ -98,11 +100,14 @@ export default {
       const weatherElement = data[0].weatherElement
       // console.log(weatherElement)
       const wx = this.handleWeatherData(weatherElement, 'Wx')
+      const { parameterValue } = weatherElement.filter((data: any) => data.elementName === 'Wx')[0]
+        .time[0].parameter
+      // console.log(typeof parameterValue)
+      const wxImg = getWeatherImageData(parameterValue)
       const pop = this.handleWeatherData(weatherElement, 'PoP')
       const minT = this.handleWeatherData(weatherElement, 'MinT')
       const maxT = this.handleWeatherData(weatherElement, 'MaxT')
-      this.weatherElement = { wx, pop, minT, maxT }
-      // console.log(this.weatherElement)
+      this.weatherElement = { wx, wxImg, pop, minT, maxT }
     }
   },
   mounted() {
@@ -169,11 +174,7 @@ export default {
         </h5>
         <div>{{ currDateFormat }}, {{ currTimeFormat }}</div>
       </div>
-      <img
-        :src="currWeatherData.img"
-        :alt="currWeatherData.description"
-        class="w-20 h-20 mx-auto"
-      />
+      <img :src="weatherElement.wxImg" :alt="weatherElement.wx" class="w-20 h-20 mx-auto" />
       <div class="font-bold text-4xl flex items-center justify-center gap-1">
         <div class="">{{ weatherElement.minT }} <span class="text-base">°C</span></div>
         <div class="">-</div>

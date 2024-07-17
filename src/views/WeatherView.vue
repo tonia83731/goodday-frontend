@@ -1,15 +1,29 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 // import { taiwanCitiesZH } from '../data/twCity'
-import { getWeatherData } from '../data/weatherData'
+import { getWeatherImageData } from '../data/weatherData'
 import TheNotification from '../components/TheNotification.vue'
 import { mapState, mapActions } from 'pinia'
 import { useCityStore } from '../stores/useCityStore'
 import { getSunRiseAndSet } from '../api/getSunData'
-// import dayjs from 'dayjs'
-import { getWeather36hr } from '../api/getWeatherData'
+import { getWeather36hr, getWeatherWeek } from '../api/getWeatherData'
 import { getEarthquake, getTyphoon } from '../api/getNotificationData'
+import dayjs from 'dayjs'
 
+type WeekWeatherDetailProps = {
+  value: string
+  measures: string
+}
+type WeekWeatherProps = {
+  startTime: string
+  weekday: string
+  PoP12h: WeekWeatherDetailProps
+  UVI: WeekWeatherDetailProps
+  MaxT: WeekWeatherDetailProps
+  MinT: WeekWeatherDetailProps
+  Wx: WeekWeatherDetailProps
+  WxImg: string
+}
 export default defineComponent({
   components: {
     TheNotification
@@ -26,9 +40,10 @@ export default defineComponent({
         minT: null,
         maxT: null
       },
+      weekweather_data: [] as WeekWeatherProps[],
       earthquakeNoti: [],
       isNotiShowed: true,
-      weatherData: getWeatherData()
+      daysOfWeek: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
     }
   },
   computed: { ...mapState(useCityStore, ['citySelected', 'cityOptions']) },
@@ -46,6 +61,48 @@ export default defineComponent({
         .time[0].parameter
       return parameterName
     },
+    handleMatchingDate(entries: any, startTime: any, endTime: any) {
+      return entries.find(
+        (entry: any) => entry.startTime === startTime && entry.endTime === endTime
+      )
+    },
+    mergeWeatherData(data: any) {
+      const mergedData: WeekWeatherProps[] = []
+
+      data[0].time.forEach((popEntry: any) => {
+        // Find corresponding entries in other elements (Wx, MinT, UVI, MaxT)
+        const wxEntry = this.handleMatchingDate(data[1].time, popEntry.startTime, popEntry.endTime)
+        const minTEntry = this.handleMatchingDate(
+          data[2].time,
+          popEntry.startTime,
+          popEntry.endTime
+        )
+        const uviEntry = this.handleMatchingDate(data[3].time, popEntry.startTime, popEntry.endTime)
+        const maxTEntry = this.handleMatchingDate(
+          data[4].time,
+          popEntry.startTime,
+          popEntry.endTime
+        )
+
+        if (wxEntry && minTEntry && uviEntry && maxTEntry) {
+          // Merge data or create a new object with all values
+          const weekday_code = dayjs(popEntry.startTime).day()
+          const img_code = wxEntry.elementValue[1].value
+          const wximg = getWeatherImageData(img_code)
+          mergedData.push({
+            startTime: popEntry.startTime,
+            weekday: this.daysOfWeek[weekday_code],
+            PoP12h: popEntry.elementValue[0],
+            Wx: wxEntry.elementValue[0],
+            WxImg: wximg,
+            MinT: minTEntry.elementValue[0],
+            UVI: uviEntry.elementValue[0],
+            MaxT: maxTEntry.elementValue[0]
+          })
+        }
+      })
+      return mergedData
+    },
     // ---------- data fetch ----------
     async fetchSunRiseAndSet() {
       const data = await getSunRiseAndSet(this.citySelected)
@@ -59,7 +116,6 @@ export default defineComponent({
     },
     async fetchWeather36hr() {
       const data = await getWeather36hr(this.citySelected)
-      console.log(data)
       const weatherElement = data[0].weatherElement
       // console.log(weatherElement)
       const wx = this.handleWeatherData(weatherElement, 'Wx')
@@ -68,6 +124,13 @@ export default defineComponent({
       const maxT = this.handleWeatherData(weatherElement, 'MaxT')
       this.weatherElement = { wx, pop, minT, maxT }
       // console.log(this.weatherElement)
+    },
+    async fetchWeatherWeek() {
+      const res = await getWeatherWeek(this.citySelected)
+      const datas = res[0].location[0].weatherElement
+      const weather = this.mergeWeatherData(datas)
+      console.log(weather)
+      this.weekweather_data = weather
     },
     async fetchEarthquake() {
       const datas = await getEarthquake()
@@ -87,14 +150,15 @@ export default defineComponent({
   mounted() {
     this.fetchSunRiseAndSet()
     this.fetchWeather36hr()
-    this.fetchEarthquake()
-    // this.fetchTyphoon()
+    this.fetchWeatherWeek()
+    // this.fetchEarthquake()
   },
   watch: {
     citySelected(newCity, oldCity) {
       if (newCity !== oldCity) {
         this.fetchSunRiseAndSet()
         this.fetchWeather36hr()
+        this.fetchWeatherWeek()
       }
     }
   }
@@ -176,27 +240,32 @@ export default defineComponent({
       <h4 class="font-bold font-titan-one text-dark text-xl md:text-2xl">WEEKLY WEATHER</h4>
       <div class="flex flex-col gap-1.5 md:grid md:grid-cols-4 md:gap-2 lg:grid lg:grid-cols-7">
         <div
-          class="w-full h-16 md:h-80 bg-sky-1 rounded-md"
-          v-for="props in weatherData"
-          :key="props.id"
+          class="w-full h-16 md:h-96 bg-sky-1 rounded-md"
+          v-for="{ startTime, weekday, PoP12h, UVI, MaxT, MinT, Wx, WxImg } in weekweather_data"
+          :key="startTime"
         >
           <div
             class="flex justify-between items-center gap-2 px-4 py-1 md:flex-col md:gap-4 md:px-1 md:py-4"
           >
-            <img :src="props.img" :alt="props.description" class="w-14" />
+            <img :src="WxImg" :alt="Wx.value" class="w-14" />
             <div class="">
-              <h5 class="text-lg font-medium">{{ props.id_zh }}</h5>
+              <h5 class="text-lg font-medium">{{ weekday }}</h5>
               <div
                 class="font-bold text-2xl flex items-center gap-1 md:flex-col md:gap-2 md:text-3xl"
               >
-                <div class="">{{ props.mintemp }} <span class="text-base">°C</span></div>
+                <div class="">{{ MinT.value }} <span class="text-base">°C</span></div>
                 <div class="md:rotate-90">-</div>
-                <div class="">{{ props.maxtemp }} <span class="text-base">°C</span></div>
+                <div class="">{{ MaxT.value }} <span class="text-base">°C</span></div>
               </div>
             </div>
             <div class="flex gap-1 items-center">
               <img src="../assets/icons/rain_icon_blue.png" alt="raining percentage" class="w-8" />
-              <h5 class="text-sky-4">{{ props.rainPercentage }} %</h5>
+              <h5 class="text-sky-4" v-if="PoP12h.value.trim() !== ''">{{ PoP12h.value }} %</h5>
+              <h5 class="text-sky-4" v-else>0 %</h5>
+            </div>
+            <div class="flex gap-3 items-center">
+              <img src="../assets/icons/uv.png" alt="raining percentage" class="w-8" />
+              <h5 class="text-brick">{{ UVI.value }}</h5>
             </div>
           </div>
         </div>
