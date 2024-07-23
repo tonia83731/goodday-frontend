@@ -42,6 +42,11 @@ export default defineComponent({
       },
       weekweather_data: [] as WeekWeatherProps[],
       earthquakeNoti: [],
+      typhoonNoti: {
+        cwaTyphoonName: '',
+        forecast: null
+      },
+      typhoonContent: '',
       isNotiShowed: true,
       daysOfWeek: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
     }
@@ -129,7 +134,7 @@ export default defineComponent({
       const res = await getWeatherWeek(this.citySelected)
       const datas = res[0].location[0].weatherElement
       const weather = this.mergeWeatherData(datas)
-      console.log(weather)
+      // console.log(weather)
       this.weekweather_data = weather
     },
     async fetchEarthquake() {
@@ -141,17 +146,37 @@ export default defineComponent({
         }
       })
       // console.log(this.earthquakeNoti)
+    },
+    async fetchTyphoon() {
+      const datas = await getTyphoon()
+      // console.log(datas)
+      const { cwaTyphoonName, forecastData } = datas[0]
+      const {
+        coordinate,
+        radiusOf70PercentProbability,
+        movingDirection,
+        movingSpeed,
+        maxGustSpeed,
+        maxWindSpeed
+      } = forecastData.fix[0]
+      const position = coordinate.split(',')
+      const direction =
+        movingDirection === 'N'
+          ? '北'
+          : movingDirection === 'E'
+            ? '東'
+            : movingDirection === 'S'
+              ? '南'
+              : '西'
+      this.typhoonContent = `${cwaTyphoonName}目前位於北緯${position[1]}度, 東經${position[0]}度。颱風半徑${radiusOf70PercentProbability}，近中心最大風速每秒 ${maxWindSpeed} 公尺，瞬間最大陣風每秒 ${maxGustSpeed} 公尺。時速 ${movingSpeed} 公里往${direction}移動`
     }
-    // async fetchTyphoon() {
-    //   const datas = await getTyphoon()
-    //   const { fix } = datas[0].forecastData
-    // }
   },
   mounted() {
     this.fetchSunRiseAndSet()
     this.fetchWeather36hr()
     this.fetchWeatherWeek()
-    // this.fetchEarthquake()
+    this.fetchEarthquake()
+    this.fetchTyphoon()
   },
   watch: {
     citySelected(newCity, oldCity) {
@@ -167,6 +192,7 @@ export default defineComponent({
 
 <template>
   <div class="container max-w-[1280px] mx-auto px-2 xl:px-0 flex flex-col gap-8">
+    {{ typhoonNoti }}
     <div class="w-full h-32 md:h-44 relative">
       <img
         src="../assets/images/weather_hero.png"
@@ -192,7 +218,10 @@ export default defineComponent({
     </div>
     <!-- notification -->
     <div v-for="({ reportcontent }, index) in earthquakeNoti" :key="'earthquake-' + index">
-      <TheNotification :notification="reportcontent" />
+      <TheNotification notiType="earthquake" :notification="reportcontent" />
+    </div>
+    <div class="">
+      <TheNotification notiType="typhoon" :notification="typhoonContent" />
     </div>
     <!-- sunrise & sunset & current weather -->
     <div class="grid grid-cols-2 grid-rows-2 gap-2 md:grid-cols-4 md:grid-rows-1 md:gap-4">

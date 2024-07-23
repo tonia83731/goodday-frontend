@@ -4,6 +4,10 @@ export default {
     notification: {
       type: String,
       required: true
+    },
+    notiType: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -26,7 +30,7 @@ export default {
   >
     <div class="flex gap-2 items-center">
       <div><font-awesome-icon :icon="['fas', 'triangle-exclamation']" /></div>
-      <div>地震警告: {{ notification }}</div>
+      <div>{{ notiType === 'typhoon' ? '颱風警告' : '地震警告' }}: {{ notification }}</div>
     </div>
     <button @click="handleIsNotiClose"><font-awesome-icon :icon="['fas', 'xmark']" /></button>
   </div>

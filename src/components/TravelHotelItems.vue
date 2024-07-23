@@ -44,12 +44,16 @@ export default {
         <div class="flex gap-2 justify-start items-center">
           <p class="text-xs bg-sky-4 text-white rounded-sm px-2">{{ Class }}</p>
           <a
-            :href="WebsiteUrl"
+            :href="'tel:' + Phone"
             class="text-base text-sky-4 underline underline-offset-2 opacity-50"
           >
             <font-awesome-icon :icon="['fas', 'square-phone']" />
           </a>
-          <a :href="Phone" class="text-base text-sky-4 underline underline-offset-2">
+          <a
+            :href="WebsiteUrl"
+            class="text-base text-sky-4 underline underline-offset-2"
+            target="_blank"
+          >
             <font-awesome-icon :icon="['fas', 'link']" />
           </a>
         </div>

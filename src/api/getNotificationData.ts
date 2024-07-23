@@ -22,10 +22,10 @@ export const getEarthquake = async () => {
 
 export const getTyphoon = async () => {
   try {
-    const timeFrom = dayjs().subtract(3, 'days').format('YYYY-MM-DD') + 'T00:00:00'
+    const timeFrom = dayjs().format('YYYY-MM-DD') + 'T00:00:00'
     const timeTo = dayjs().format('YYYY-MM-DD') + 'T23:59:59'
     const res = await axios.get(
-      `${weather_base_url}/${typhoon}?Authorization=${authorized_key}&timeFrom=${timeFrom}&timeTo=${timeTo}`
+      `${weather_base_url}/${typhoon}?Authorization=${authorized_key}&dataset=forecastData&tau=6&timeFrom=${timeFrom}&timeTo=${timeTo}`
     )
     // console.log(res?.data.records.Earthquake)
     return res?.data.records.tropicalCyclones.tropicalCyclone
